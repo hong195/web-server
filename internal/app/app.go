@@ -3,21 +3,19 @@ package app
 
 import (
 	"fmt"
-	"github.com/evrone/go-clean-template/config"
-	"github.com/evrone/go-clean-template/internal/controller/restapi"
-	"github.com/evrone/go-clean-template/internal/repo/persistent"
-	"github.com/evrone/go-clean-template/internal/repo/webapi"
-	"github.com/evrone/go-clean-template/internal/usecase/translation"
-	"github.com/evrone/go-clean-template/pkg/httpserver"
-	"github.com/evrone/go-clean-template/pkg/logger"
-	"github.com/evrone/go-clean-template/pkg/postgres"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/evrone/go-clean-template/config"
+	"github.com/evrone/go-clean-template/internal/controller/restapi"
+	"github.com/evrone/go-clean-template/pkg/httpserver"
+	"github.com/evrone/go-clean-template/pkg/logger"
+	"github.com/evrone/go-clean-template/pkg/postgres"
 )
 
 // Run creates objects via constructors.
-func Run(cfg *config.Config) { //nolint: gocyclo,cyclop,funlen,gocritic,nolintlint
+func Run(cfg *config.Config) {
 	l := logger.New(cfg.Log.Level)
 
 	// Repository
@@ -27,15 +25,9 @@ func Run(cfg *config.Config) { //nolint: gocyclo,cyclop,funlen,gocritic,nolintli
 	}
 	defer pg.Close()
 
-	// Use-Case
-	translationUseCase := translation.New(
-		persistent.New(pg),
-		webapi.New(),
-	)
-
 	// HTTP Server
 	httpServer := httpserver.New(l, httpserver.Port(cfg.HTTP.Port), httpserver.Prefork(cfg.HTTP.UsePreforkMode))
-	restapi.NewRouter(httpServer.App, cfg, translationUseCase, l)
+	restapi.NewRouter(httpServer.App, cfg, l)
 
 	httpServer.Start()
 

@@ -179,7 +179,7 @@ func TestFatal_ExitsAndLogs(t *testing.T) {
 		return
 	}
 
-	cmd := exec.CommandContext(t.Context(), os.Args[0], "-test.run", t.Name()) //nolint:gosec // it's ok to exec self in tests
+	cmd := exec.CommandContext(t.Context(), os.Args[0], "-test.run", t.Name())
 
 	cmd.Env = append(os.Environ(), "LOGGER_FATAL_SUBPROC=1")
 

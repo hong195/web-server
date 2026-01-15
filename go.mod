@@ -5,10 +5,8 @@ go 1.25
 tool (
 	github.com/daixiang0/gci
 	github.com/golang-migrate/migrate/v4/cmd/migrate
-	github.com/golangci/golangci-lint/v2/cmd/golangci-lint
 	github.com/swaggo/swag/cmd/swag
 	go.uber.org/mock/mockgen
-	golang.org/x/vuln/cmd/govulncheck
 	mvdan.cc/gofumpt
 )
 

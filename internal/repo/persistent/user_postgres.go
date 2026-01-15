@@ -51,7 +51,7 @@ func (r *UserRepo) DeductBalance(ctx context.Context, userID int64, amount float
 	if err != nil {
 		return fmt.Errorf("UserRepo - DeductBalance - r.Pool.Begin: %w", err)
 	}
-	defer tx.Rollback(ctx) //nolint:errcheck
+	defer tx.Rollback(ctx)
 
 	var balance float64
 	err = tx.QueryRow(ctx, "SELECT balance FROM users WHERE id = $1 FOR UPDATE", userID).Scan(&balance)

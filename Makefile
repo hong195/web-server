@@ -43,10 +43,6 @@ deps: ### deps tidy + verify
 	go mod tidy && go mod verify
 .PHONY: deps
 
-deps-audit: ### check dependencies vulnerabilities
-	govulncheck ./...
-.PHONY: deps-audit
-
 format: ### Run code formatter
 	gofumpt -l -w .
 	gci write . --skip-generated -s standard -s default
@@ -60,18 +56,6 @@ run: deps swag-v1 ### run the application
 docker-rm-volume: ### remove docker volume
 	docker volume rm go-clean-template_pg-data
 .PHONY: docker-rm-volume
-
-linter-golangci: ### check by golangci linter
-	golangci-lint run
-.PHONY: linter-golangci
-
-linter-hadolint: ### check by hadolint linter
-	git ls-files --exclude='Dockerfile*' --ignored | xargs hadolint
-.PHONY: linter-hadolint
-
-linter-dotenv: ### check by dotenv linter
-	dotenv-linter
-.PHONY: linter-dotenv
 
 test: ### run test
 	go test -v -race -covermode atomic -coverprofile=coverage.txt ./internal/... ./pkg/...
@@ -98,6 +82,3 @@ bin-deps: ### install tools
 	go install tool
 	go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate
 .PHONY: bin-deps
-
-pre-commit: swag-v1 mock format linter-golangci test ### run pre-commit
-.PHONY: pre-commit

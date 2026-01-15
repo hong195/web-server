@@ -27,10 +27,6 @@ compose-up-all: ### Run docker compose (with backend and reverse proxy)
 	$(BASE_STACK) up --build -d
 .PHONY: compose-up-all
 
-compose-up-integration-test: ### Run docker compose with integration test
-	$(INTEGRATION_TEST_STACK) up --build --abort-on-container-exit --exit-code-from integration-test
-.PHONY: compose-up-integration-test
-
 compose-down: ### Down docker compose
 	$(ALL_STACK) down --remove-orphans
 .PHONY: compose-down

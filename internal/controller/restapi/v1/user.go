@@ -8,6 +8,18 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// GetUser godoc
+// @Summary     Get user by ID
+// @Description Returns user with their balance
+// @Tags        users
+// @Accept      json
+// @Produce     json
+// @Param       id path int true "User ID"
+// @Success     200 {object} entity.User
+// @Failure     400 {object} map[string]string "Invalid user ID"
+// @Failure     404 {object} map[string]string "User not found"
+// @Failure     500 {object} map[string]string "Internal server error"
+// @Router      /users/{id} [get]
 func (c *V1) GetUser(ctx *fiber.Ctx) error {
 	idParam := ctx.Params("id")
 	userID, err := strconv.ParseInt(idParam, 10, 64)

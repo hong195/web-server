@@ -1,9 +1,56 @@
 basePath: /v1
+definitions:
+  entity.User:
+    properties:
+      balance:
+        type: number
+      id:
+        type: integer
+    type: object
 host: localhost:8080
 info:
   contact: {}
   description: Skinport items and user balance API
   title: Skinport API
   version: "1.0"
-paths: {}
+paths:
+  /users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Returns user with their balance
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.User'
+        "400":
+          description: Invalid user ID
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: User not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get user by ID
+      tags:
+      - users
 swagger: "2.0"

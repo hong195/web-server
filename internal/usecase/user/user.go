@@ -5,10 +5,14 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/evrone/go-clean-template/internal/entity"
 	"github.com/evrone/go-clean-template/internal/repo"
 )
 
-var ErrInvalidAmount = errors.New("amount must be greater than zero")
+var (
+	ErrInvalidAmount = errors.New("amount must be greater than zero")
+	ErrUserNotFound  = errors.New("user not found")
+)
 
 type UseCase struct {
 	repo repo.UserRepo
@@ -16,6 +20,19 @@ type UseCase struct {
 
 func New(r repo.UserRepo) *UseCase {
 	return &UseCase{repo: r}
+}
+
+func (uc *UseCase) GetByID(ctx context.Context, userID int64) (*entity.User, error) {
+	user, err := uc.repo.GetByID(ctx, userID)
+	if err != nil {
+		return nil, fmt.Errorf("UserUseCase - GetByID: %w", err)
+	}
+
+	if user == nil {
+		return nil, ErrUserNotFound
+	}
+
+	return user, nil
 }
 
 func (uc *UseCase) DeductBalance(ctx context.Context, userID int64, amount float64) error {

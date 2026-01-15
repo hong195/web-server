@@ -1,4 +1,3 @@
-// Package app configures and runs application.
 package app
 
 import (
@@ -9,29 +8,30 @@ import (
 
 	"github.com/evrone/go-clean-template/config"
 	"github.com/evrone/go-clean-template/internal/controller/restapi"
+	"github.com/evrone/go-clean-template/internal/repo/persistent"
+	"github.com/evrone/go-clean-template/internal/usecase/user"
 	"github.com/evrone/go-clean-template/pkg/httpserver"
 	"github.com/evrone/go-clean-template/pkg/logger"
 	"github.com/evrone/go-clean-template/pkg/postgres"
 )
 
-// Run creates objects via constructors.
 func Run(cfg *config.Config) {
 	l := logger.New(cfg.Log.Level)
 
-	// Repository
 	pg, err := postgres.New(cfg.PG.URL, postgres.MaxPoolSize(cfg.PG.PoolMax))
 	if err != nil {
 		l.Fatal(fmt.Errorf("app - Run - postgres.New: %w", err))
 	}
 	defer pg.Close()
 
-	// HTTP Server
+	userRepo := persistent.NewUserRepo(pg)
+	userUseCase := user.New(userRepo)
+
 	httpServer := httpserver.New(l, httpserver.Port(cfg.HTTP.Port), httpserver.Prefork(cfg.HTTP.UsePreforkMode))
-	restapi.NewRouter(httpServer.App, cfg, l)
+	restapi.NewRouter(httpServer.App, cfg, l, userUseCase)
 
 	httpServer.Start()
 
-	// Waiting signal
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 
@@ -42,7 +42,6 @@ func Run(cfg *config.Config) {
 		l.Error(fmt.Errorf("app - Run - httpServer.Notify: %w", err))
 	}
 
-	// Shutdown
 	err = httpServer.Shutdown()
 	if err != nil {
 		l.Error(fmt.Errorf("app - Run - httpServer.Shutdown: %w", err))

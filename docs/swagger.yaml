@@ -1,0 +1,9 @@
+basePath: /v1
+host: localhost:8080
+info:
+  contact: {}
+  description: Skinport items and user balance API
+  title: Skinport API
+  version: "1.0"
+paths: {}
+swagger: "2.0"

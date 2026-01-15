@@ -1,15 +1,18 @@
 package v1
 
 import (
+	"github.com/evrone/go-clean-template/internal/usecase"
 	"github.com/evrone/go-clean-template/pkg/logger"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 )
 
-// NewRoutes -.
-func NewRoutes(apiV1Group fiber.Router, l logger.Interface) {
-	_ = &V1{l: l, v: validator.New(validator.WithRequiredStructEnabled())}
+func NewRoutes(apiV1Group fiber.Router, l logger.Interface, user usecase.User) {
+	c := &V1{
+		l:    l,
+		v:    validator.New(validator.WithRequiredStructEnabled()),
+		user: user,
+	}
 
-	// Routes will be added here
-	_ = apiV1Group
+	apiV1Group.Get("/users/:id", c.GetUser)
 }

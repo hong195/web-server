@@ -8,8 +8,6 @@ export
 endif
 
 BASE_STACK = docker compose -f docker-compose.yml
-INTEGRATION_TEST_STACK = $(BASE_STACK) -f docker-compose-integration-test.yml
-ALL_STACK = $(INTEGRATION_TEST_STACK)
 
 # HELP =================================================================================================================
 # This will output the help for each task
@@ -28,7 +26,7 @@ compose-up-all: ### Run docker compose (with backend and reverse proxy)
 .PHONY: compose-up-all
 
 compose-down: ### Down docker compose
-	$(ALL_STACK) down --remove-orphans
+	$(BASE_STACK) down --remove-orphans
 .PHONY: compose-down
 
 swag-v1: ### swag init
@@ -38,11 +36,6 @@ swag-v1: ### swag init
 deps: ### deps tidy + verify
 	go mod tidy && go mod verify
 .PHONY: deps
-
-format: ### Run code formatter
-	gofumpt -l -w .
-	gci write . --skip-generated -s standard -s default
-.PHONY: format
 
 run: deps swag-v1 ### run the application
 	go mod download && \

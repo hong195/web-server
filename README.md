@@ -1,11 +1,8 @@
 ![Go Clean Template](docs/img/logo.svg)
 
-# Go Clean template
+# Go Чистая Архитектура
 
-[🇨🇳 中文](README_CN.md)
-[🇷🇺 RU](README_RU.md)
-
-Clean Architecture template for Golang services
+Шаблон Чистой Архитектуры для приложений на Golang
 
 [![Release](https://img.shields.io/github/v/release/evrone/go-clean-template.svg)](https://github.com/evrone/go-clean-template/releases/)
 [![License](https://img.shields.io/badge/License-MIT-success)](https://github.com/evrone/go-clean-template/blob/master/LICENSE)
@@ -23,60 +20,58 @@ Clean Architecture template for Golang services
 [![Testing](https://img.shields.io/badge/Testify-Testing%20Framework-blue)](https://github.com/stretchr/testify)
 [![Mocking](https://img.shields.io/badge/Mock-Mocking%20Library-blue)](https://go.uber.org/mock)
 
-## Overview
+## Обзор
 
-The purpose of the template is to show:
+Цель этого шаблона - показать принципы Чистой Архитектуры Роберта Мартина (дядюшки Боба):
 
-- how to organize a project and prevent it from turning into spaghetti code
-- where to store business logic so that it remains independent, clean, and extensible
-- how not to lose control when a microservice grows
+- как структурировать проект и не дать ему превратиться в спагетти-код
+- где хранить бизнес-логику, чтобы она оставалась независимой, чистой и расширяемой
+- как не потерять контроль при росте проекта
 
-Using the principles of Robert Martin (aka Uncle Bob).
+[Go-clean-template](https://evrone.com/go-clean-template?utm_source=github&utm_campaign=go-clean-template) создан и
+поддерживается [Evrone](https://evrone.com/?utm_source=github&utm_campaign=go-clean-template).
 
-[Go-clean-template](https://evrone.com/go-clean-template?utm_source=github&utm_campaign=go-clean-template) is created &
-supported by [Evrone](https://evrone.com/?utm_source=github&utm_campaign=go-clean-template).
+Этот шаблон поддерживает три типа серверов:
 
-This template implements three types of servers:
+- AMQP RPC (на основе RabbitMQ в качестве [транспорта](https://github.com/rabbitmq/amqp091-go)
+  и [Request-Reply паттерна]((https://www.enterpriseintegrationpatterns.com/patterns/messaging/RequestReply.html)))
+- NATS RPC (на основе NATS в качестве [транспорта](https://github.com/nats-io/nats.go)
+  и [Request-Reply паттерна]((https://www.enterpriseintegrationpatterns.com/patterns/messaging/RequestReply.html))))
+- gRPC ([gRPC](https://grpc.io/) фреймворк на основе protobuf)
+- REST API ([Fiber](https://github.com/gofiber/fiber) фреймворк)
 
-- AMQP RPC (based on RabbitMQ as [transport](https://github.com/rabbitmq/amqp091-go)
-  and [Request-Reply pattern](https://www.enterpriseintegrationpatterns.com/patterns/messaging/RequestReply.html))
-- MQ RPC (based on NATS as [transport](https://github.com/nats-io/nats.go)
-  and [Request-Reply pattern](https://www.enterpriseintegrationpatterns.com/patterns/messaging/RequestReply.html))
-- gRPC ([gRPC](https://grpc.io/) framework based on protobuf)
-- REST API ([Fiber](https://github.com/gofiber/fiber) framework)
+## Содержание
 
-## Content
+- [Быстрый старт](#быстрый-старт)
+- [Структура проекта](#структура-проекта)
+- [Внедрение зависимостей](#внедрение-зависимостей)
+- [Чистая Архитектура](#чистая-архитектура)
 
-- [Quick start](#quick-start)
-- [Project structure](#project-structure)
-- [Dependency Injection](#dependency-injection)
-- [Clean Architecture](#clean-architecture)
+## Быстрый старт
 
-## Quick start
-
-### Local development
+### Локальная разработка
 
 ```sh
 # Postgres, RabbitMQ, NATS
 make compose-up
-# Run app with migrations
+# Запуск приложения и миграций
 make run
 ```
 
-### Integration tests (can be run in CI)
+### Интеграционные тесты (может быть использовано с CI)
 
 ```sh
 # DB, app + migrations, integration tests
 make compose-up-integration-test
 ```
 
-### Full docker stack with reverse proxy
+### Весь docker stack с reverse proxy
 
 ```sh
 make compose-up-all 
 ```
 
-Check services:
+Проверьте сервисы:
 
 - AMQP RPC:
   - URL: `amqp://guest:guest@127.0.0.1:5672/`
@@ -101,59 +96,59 @@ Check services:
   - http://nats.lvh.me | http://127.0.0.1:8222/
   - Credentials: `guest` / `guest`
 
-## Project structure
+## Структура проекта
 
 ### `cmd/app/main.go`
 
-Configuration and logger initialization. Then the main function "continues" in
-`internal/app/app.go`.
+Инициализация конфигурации и логгера. Здесь вызывается основная часть приложения из `internal/app/app.go`.
 
 ### `config`
 
-The twelve-factor app stores config in environment variables (often shortened to `env vars` or `env`). Env vars are easy
-to change between deploys without changing any code; unlike config files, there is little chance of them being checked
-into the code repo accidentally; and unlike custom config files, or other config mechanisms such as Java System
-Properties, they are a language- and OS-agnostic standard.
+Приложение двенадцати факторов хранит конфигурацию в переменных окружения (часто сокращается до `env vars` или `env`).
+Переменные окружения легко изменить между развёртываниями, не изменяя код; в отличие от файлов конфигурации, менее
+вероятно случайно сохранить их в репозиторий кода; и в отличие от пользовательских конфигурационных файлов или других
+механизмов конфигурации, таких как Java System Properties, они являются независимым от языка и операционной системы
+стандартом.
 
-Config: [config.go](config/config.go)
+Конфигурация: [config.go](config/config.go)
 
-Example: [.env.example](.env.example)
+Пример: [.env.example](.env.example)
 
-[docker-compose.yml](docker-compose.yml) uses `env` variables to configure services.
+[docker-compose.yml](docker-compose.yml) использует переменные `env` для настройки сервисов.
 
 ### `docs`
 
-Swagger documentation. Auto-generated by [swag](https://github.com/swaggo/swag) library.
-You don't need to correct anything by yourself.
+Документация Swagger. Генерируется автоматически с помощью библиотеки [swag](https://github.com/swaggo/swag).
+Вам не нужно ничего редактировать вручную.
 
 #### `docs/proto`
 
-Protobuf files. They are used to generate Go code for gRPC services.
-The proto files are also used to generate documentation for gRPC services.
-You don't need to correct anything by yourself.
+Protobuf файлы. Они используются для генерации Go-кода для gRPC сервисов.
+Protobuf файлы также используются для генерации документации для gRPC сервисов.
+Вам не нужно ничего исправлять самостоятельно.
 
 ### `integration-test`
 
-Integration tests.
-They are launched as a separate container, next to the application container.
+Интеграционные тесты.
+Они запускаются в отдельном контейнере, рядом с контейнером приложения.
 
 ### `internal/app`
 
-There is always one _Run_ function in the `app.go` file, which "continues" the _main_ function.
+Здесь находится только одна функция _Run_. Она размещена в файле `app.go` и является логическим продолжением функции
+_main_.
 
-This is where all the main objects are created.
-Dependency injection occurs through the "New ..." constructors (see Dependency Injection).
-This technique allows us to layer the application using the [Dependency Injection](#dependency-injection) principle.
-This makes the business logic independent from other layers.
+Здесь создаются все основные объекты.
+[Внедрение зависимостей](#внедрение-зависимостей) происходит через конструктор "New ...".
+Это позволяет слоировать приложение, делая бизнес-логику независимой от других слоев.
 
-Next, we start the server and wait for signals in _select_ for graceful completion.
-If `app.go` starts to grow, you can split it into multiple files.
+Далее запускается сервер и ожидается сигнал в _select_ для корректного завершения работы.
+Если `app.go` стал слишком большим, вы можете разделить его на несколько файлов.
 
-For a large number of injections, [wire](https://github.com/google/wire) can be used.
+Если зависимостей много, то для удобства можно использовать [wire](https://github.com/google/wire).
 
-The `migrate.go` file is used for database auto migrations.
-It is included if an argument with the _migrate_ tag is specified.
-For example:
+Файл `migrate.go` используется для автоматической миграции базы данных.
+Он включается в компиляцию только при указании тега _migrate_.
+Пример:
 
 ```sh
 go run -tags migrate ./cmd/app
@@ -161,23 +156,23 @@ go run -tags migrate ./cmd/app
 
 ### `internal/controller`
 
-Server handler layer (MVC controllers). The template shows 3 servers:
+Слой хэндлеров сервера (MVC контроллеры). В шаблоне показана работа 3 серверов:
 
-- AMQP RPC (based on RabbitMQ as transport)
-- gRPC ([gRPC](https://grpc.io/) framework based on protobuf)
-- REST API ([Fiber](https://github.com/gofiber/fiber) framework)
+- AMQP RPC (на основе RabbitMQ в качестве транспорта)
+- gRPC ([gRPC](https://grpc.io/) фреймворк на основе protobuf)
+- REST API ([Fiber](https://github.com/gofiber/fiber) фреймворк)
 
-Server routers are written in the same style:
+Маршрутизаторы http сервера пишутся в едином стиле:
 
-- Handlers are grouped by area of application (by a common basis)
-- For each group, its own router structure is created, the methods of which process paths
-- The structure of the business logic is injected into the router structure, which will be called by the handlers
+- Хэндлеры группируются по области применения (по общему критерию)
+- Для каждой группы создается свой маршрутизатор
+- Объект бизнес-логики передается в маршрутизатор, чтобы быть доступным внутри хэндлеров
 
 #### `internal/controller/amqp_rpc`
 
-Simple RPC versioning.
-For v2, we will need to add the `amqp_rpc/v2` folder with the same content.
-And in the file `internal/controller/amqp_rpc/router.go` add the line:
+Простое версионирование RPC.
+Для версии v2 нужно будет добавить папку `amqp_rpc/v2` с таким же содержимым.
+А в файле `internal/controller/amqp_rpc/router.go` добавить строку:
 
 ```go
 routes := make(map[string]server.CallHandler)
@@ -193,10 +188,10 @@ routes := make(map[string]server.CallHandler)
 
 #### `internal/controller/grpc`
 
-Simple gRPC versioning.
-For v2, we will need to add the `grpc/v2` folder with the same content.
-Also add the `v2` folder to the proto files in `docs/proto`.
-And in the file `internal/controller/grpc/router.go` add the line:
+Простое версионирование gRPC.  
+Для версии v2 нужно будет добавить папку `grpc/v2` с таким же содержимым.  
+Также добавьте папку `v2` в proto-файлы в `docs/proto`.  
+И в файле `internal/controller/grpc/router.go` добавьте строку:
 
 ```go
 {
@@ -212,14 +207,14 @@ reflection.Register(app)
 
 #### `internal/controller/http`
 
-Simple REST versioning.
-For v2, we will need to add the `http/v2` folder with the same content.
-And in the file `internal/controller/http/router.go` add the line:
+Простое версионирование REST API.
+Для создания версии v2 нужно создать папку `http/v2` с таким же содержимым.
+Добавить в файл `internal/controller/http/router.go` строки:
 
 ```go
 apiV1Group := app.Group("/v1")
 {
-	v1.NewTranslationRoutes(apiV1Group, t, l)
+    v1.NewTranslationRoutes(apiV1Group, t, l)
 }
 apiV2Group := app.Group("/v2")
 {
@@ -227,52 +222,52 @@ apiV2Group := app.Group("/v2")
 }
 ```
 
-Instead of [Fiber](https://github.com/gofiber/fiber), you can use any other http framework.
+Вместо [Fiber](https://github.com/gofiber/fiber) можно использовать любой другой http фреймворк.
 
-In `router.go` and above the handler methods, there are comments for generating swagger documentation
-using [swag](https://github.com/swaggo/swag).
+В файле `router.go` над хэндлером написаны комментарии для генерации документации через
+swagger [swag](https://github.com/swaggo/swag).
 
 ### `internal/entity`
 
-Entities of business logic (models) can be used in any layer.
-There can also be methods, for example, for validation.
+Сущности бизнес-логики (модели). Могут быть использованы в любом слое.
+Также они могут иметь методы, например, для валидации.
 
 ### `internal/usecase`
 
-Business logic.
+Бизнес-логика.
 
-- Methods are grouped by area of application (on a common basis)
-- Each group has its own structure
-- One file - one structure
+- Методы группируются по области применения (по общему критерию)
+- У каждой группы своя отдельная структура
+- Один файл - одна структура
 
-Repositories, webapi, rpc, and other business logic structures are injected into business logic structures
-(see [Dependency Injection](#dependency-injection)).
+Репозитории, webapi, rpc и другие структуры передаются в слой бизнес-логики в связующем файле `internal/app/app.go`
+(смотрите [Внедрение зависимостей](#внедрение-зависимостей)).
 
 #### `internal/repo/persistent`
 
-A repository is an abstract storage (database) that business logic works with.
+Репозиторий — это абстрактное хранилище (база данных), с которым взаимодействует бизнес-логика.
 
 #### `internal/repo/webapi`
 
-It is an abstract web API that business logic works with.
-For example, it could be another microservice that business logic accesses via the REST API.
-The package name changes depending on the purpose.
+Это абстрактное web API, с которым взаимодействует бизнес-логика.
+Например, это может быть внешний микросервис, к которому бизнес-логика обращается через REST API.
+Название пакета выбирается таким, чтобы соответствовать его назначению.
 
 ### `pkg/rabbitmq`
 
-RabbitMQ RPC pattern:
+RabbitMQ RPC паттерн:
 
-- There is no routing inside RabbitMQ
-- Exchange fanout is used, to which 1 exclusive queue is bound, this is the most productive config
-- Reconnect on the loss of connection
+- Внутри RabbitMQ не используется маршрутизация
+- Используется fanout-обмен, к которому привязана одна эксклюзивная очередь - это наиболее производительная конфигурация
+- Переподключение при потере соединения
 
-## Dependency Injection
+## Внедрение зависимостей
 
-In order to remove the dependence of business logic on external packages, dependency injection is used.
+Для устранения зависимости бизнес-логики от внешних пакетов используется внедрение зависимостей.
 
-For example, through the New constructor, we inject the dependency into the structure of the business logic.
-This makes the business logic independent (and portable).
-We can override the implementation of the interface without making changes to the `usecase` package.
+Например, через конструктор "New" внедряется репозиторий в слой бизнес-логики.
+Это делает бизнес-логику независимой и переносимой.
+Мы можем переписать реализацию интерфейса репозитория, не внося изменения в пакет бизнес-логики `usecase`.
 
 ```go
 package usecase
@@ -300,52 +295,52 @@ func (uc *UseCase) Do() {
 }
 ```
 
-It will also allow us to do auto-generation of mocks (for example with [mockery](https://github.com/vektra/mockery)) and
-easily write unit tests.
+Благодаря разделению через интерфейсы можно генерировать моки (например,
+используя [mockery](https://github.com/vektra/mockery)) и легко писать юнит-тесты.
 
-> We are not tied to specific implementations in order to always be able to change one component to another.
-> If the new component implements the interface, nothing needs to be changed in the business logic.
+> Мы не привязаны к конкретным реализациям и всегда можем заменить один компонент на другой.
+> Если новый компонент реализует интерфейс, то в бизнес-логике ничего не нужно менять.
 
-## Clean Architecture
+## Чистая Архитектура
 
-### Key idea
+### Ключевая идея
 
-Programmers realize the optimal architecture for an application after most of the code has been written.
+Программисты создают оптимальную архитектуру приложения после написания основной части кода.
 
-> A good architecture allows decisions to be delayed to as late as possible.
+> Хорошая архитектура позволяет откладывать изменения как можно дольше.
 
-### The main principle
+### Основной принцип
 
-Dependency Inversion (the same one from SOLID) is the principle of dependency injection.
-The direction of dependencies goes from the outer layer to the inner layer.
-Due to this, business logic and entities remain independent from other parts of the system.
+Инверсия зависимостей (та же, что и в SOLID) используется как принцип для внедрения зависимостей.
+Зависимости направлены от внешнего слоя к внутреннему.
+Благодаря этому бизнес-логика и сущности остаются независимыми от других частей системы.
 
-So, the application is divided into 2 layers, internal and external:
+Например, приложение можно разделить на два слоя - внутренний и внешний:
 
-1. **Business logic** (Go standard library).
-2. **Tools** (databases, servers, message brokers, any other packages and frameworks).
+1. **Бизнес-логика** (например, стандартная библиотека Go).
+2. **Инструменты** (базы данных, серверы, брокеры сообщений и другие библиотеки и фреймворки).
 
-![Clean Architecture](docs/img/layers-1.png)
+![Чистая архитектура](docs/img/layers-1.png)
 
-**The inner layer** with business logic should be clean. It should:
+**Внутренний слой** с бизнес-логикой должен быть чистым. Он обязан:
 
-- Not have package imports from the outer layer.
-- Use only the capabilities of the standard library.
-- Make calls to the outer layer through the interface (!).
+- Не импортировать пакеты из внешних слоев.
+- Использовать только стандартную библиотеку.
+- Взаимодействовать с внешними слоями через интерфейсы (!).
 
-The business logic doesn't know anything about Postgres or a specific web API.
-Business logic has an interface for working with an _abstract_ database or _abstract_ web API.
+Бизнес-логика не должна ничего знать о Postgres или о реализации web API.
+Бизнес-логика имеет интерфейс для взаимодействия с _абстрактной_ базой данных или _абстрактным_ web API.
 
-**The outer layer** has other limitations:
+**Внешний слой** имеет ограничения:
 
-- All components of this layer are unaware of each other's existence. How to call another from one tool? Not directly,
-  only through the inner layer of business logic.
-- All calls to the inner layer are made through the interface (!).
-- Data is transferred in a format that is convenient for business logic (`internal/entity`).
+- Компоненты этого слоя не могут знать друг о друге и взаимодействовать напрямую. Обращение друг к другу происходит
+  через внутренний слой - слой бизнес-логики.
+- Вызовы во внутренний слой выполняются через интерфейсы (!).
+- Данные передаются в формате, удобном для бизнес-логики (структуры хранятся в `internal/entity`).
 
-For example, you need to access the database from HTTP (controller).
-Both HTTP and database are in the outer layer, which means they know nothing about each other.
-The communication between them is carried out through `usecase` (business logic):
+Например, нужно обратиться к базе данных из HTTP хэндлера (в слое контроллер).
+База данных и HTTP находятся во внешнем слое. Они не знают друг о друге ничего и не могут взаимодействовать напрямую.
+Взаимодействие будет происходить через слой бизнес-логики `usecase`:
 
 ```
     HTTP > usecase
@@ -354,12 +349,12 @@ The communication between them is carried out through `usecase` (business logic)
     HTTP < usecase
 ```
 
-The symbols > and < show the intersection of layer boundaries through Interfaces.
-The same is shown in the picture:
+Символы > и < показывают пересечения слоев через интерфейсы и направления.
+Это же показано на схеме:
 
-![Example](docs/img/example-http-db.png)
+![Пример](docs/img/example-http-db.png)
 
-Or more complex business logic:
+Пример более сложного пути данных:
 
 ```
     HTTP > usecase
@@ -374,25 +369,25 @@ Or more complex business logic:
     HTTP < usecase
 ```
 
-### Layers
+### Слои
 
-![Example](docs/img/layers-2.png)
+![Пример](docs/img/layers-2.png)
 
-### Clean Architecture Terminology
+### Терминология в Чистой Архитектуре
 
-- **Entities** are structures that business logic operates on.
-  They are located in the `internal/entity` folder.
-  In MVC terms, entities are models.
-- **Use Cases** is business logic located in `internal/usecase`.
+- **Entities** (сущности) - это структуры, с которыми работает бизнес-логика.
+  Они располагаются в папке `internal/entity`.
+  В терминологии MVC сущности - это модели.
+- **Use Cases** - это бизнес-логика. Располагается в папке `internal/usecase`.
 
-The layer with which business logic directly interacts is usually called the _infrastructure_ layer.
-These can be repositories `internal/usecase/repo`, external webapi `internal/usecase/webapi`, any pkg, and other
-microservices.
-In the template, the _infrastructure_ packages are located inside `internal/usecase`.
+Слой, с которым бизнес-логика взаимодействует напрямую, обычно называется _инфраструктурным_ слоем.
+Это может быть репозиторий `internal/usecase/repo`, внешнее webapi `internal/usecase/webapi`, любой пакет или
+микросервис.
+В шаблоне пакеты _infrastructure_ размещены внутри `internal/usecase`.
 
-You can choose how to call the entry points as you wish. The options are:
+Вы можете выбирать, как называть точки входа, по своему усмотрению. Варианты такие:
 
-- controller (in our case)
+- controller (в нашем случае)
 - delivery
 - transport
 - gateways
@@ -400,34 +395,36 @@ You can choose how to call the entry points as you wish. The options are:
 - primary
 - input
 
-### Additional layers
+### Дополнительные слои
 
-The classic version
-of [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) was designed for
-building large monolithic applications and has 4 layers.
+В классической версии [Чистой Архитектуры](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+для создания больших монолитных приложений предложено 4 слоя.
 
-In the original version, the outer layer is divided into two more, which also have an inversion of dependencies
-to each other (directed inward) and communicate through interfaces.
+В исходной версии внешний слой делится на два, которые также имеют инверсию зависимостей в другие слои и взаимодействуют
+через интерфейсы.
 
-The inner layer is also divided into two (with separation of interfaces), in the case of complex logic.
+Внутренний слой также делится на два (с использованием интерфейсов) в случае сложной логики.
 
 ---
 
-Complex tools can be divided into additional layers.
-However, you should add layers only if really necessary.
+Сложные инструменты могут быть разделены на дополнительные слои.
+Однако добавлять слои следует только в том случае, если это действительно необходимо.
 
-### Alternative approaches
+### Другие подходы
 
-In addition to Clean architecture, _Onion architecture_ and _Hexagonal_ (_Ports and adapters_) are similar to it.
-Both are based on the principle of Dependency Inversion.
-_Ports and adapters_ are very close to _Clean Architecture_, the differences are mainly in terminology.
+Кроме Чистой Архитектуры есть и другие подходы:
 
-## Similar projects
+- Луковая Архитектура
+- Гексагональная (_Порты и адаптеры_ также похожа на неё)
+  Они обе основаны на принципе инверсии зависимостей.
+  _Порты и адаптеры_ очень похожи на _Чистую Архитектуру_. Различия в основном заключаются в терминологии.
+
+## Похожие проекты
 
 - [https://github.com/bxcodec/go-clean-arch](https://github.com/bxcodec/go-clean-arch)
 - [https://github.com/zhashkevych/courses-backend](https://github.com/zhashkevych/courses-backend)
 
-## Useful links
+## Дополнительная информация
 
 - [The Clean Architecture article](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 - [Twelve factors](https://12factor.net/ru/)

@@ -16,9 +16,9 @@ import (
 // @Produce     json
 // @Param       id path int true "User ID"
 // @Success     200 {object} entity.User
-// @Failure     400 {object} map[string]string "Invalid user ID"
-// @Failure     404 {object} map[string]string "User not found"
-// @Failure     500 {object} map[string]string "Internal server error"
+// @Failure     400 {object} response.Error
+// @Failure     404 {object} response.Error
+// @Failure     500 {object} response.Error
 // @Router      /users/{id} [get]
 func (c *V1) GetUser(ctx *fiber.Ctx) error {
 	idParam := ctx.Params("id")

@@ -15,4 +15,5 @@ func NewRoutes(apiV1Group fiber.Router, l logger.Interface, user usecase.User) {
 	}
 
 	apiV1Group.Get("/users/:id", c.GetUser)
+	apiV1Group.Post("/balance/deduct", c.DeductBalance)
 }

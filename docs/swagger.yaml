@@ -7,6 +7,22 @@ definitions:
       id:
         type: integer
     type: object
+  request.DeductBalance:
+    properties:
+      amount:
+        type: number
+      user_id:
+        type: integer
+    required:
+    - amount
+    - user_id
+    type: object
+  response.Error:
+    properties:
+      error:
+        example: message
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -14,6 +30,45 @@ info:
   title: Skinport API
   version: "1.0"
 paths:
+  /balance/deduct:
+    post:
+      consumes:
+      - application/json
+      description: Deducts specified amount from user balance
+      parameters:
+      - description: Deduct balance request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.DeductBalance'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success response with new balance
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Error'
+        "402":
+          description: Insufficient funds
+          schema:
+            $ref: '#/definitions/response.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Error'
+      summary: Deduct user balance
+      tags:
+      - balance
   /users/{id}:
     get:
       consumes:
@@ -33,23 +88,17 @@ paths:
           schema:
             $ref: '#/definitions/entity.User'
         "400":
-          description: Invalid user ID
+          description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.Error'
         "404":
-          description: User not found
+          description: Not Found
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.Error'
         "500":
-          description: Internal server error
+          description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/response.Error'
       summary: Get user by ID
       tags:
       - users

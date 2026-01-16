@@ -120,8 +120,6 @@ func (r *SkinportRepo) fetchItems(ctx context.Context, tradable bool) ([]skinpor
 
 	reader = brotli.NewReader(resp.Body)
 
-	fmt.Println(resp.Body)
-
 	var items []skinportItem
 	if err := json.NewDecoder(reader).Decode(&items); err != nil {
 		return nil, fmt.Errorf("decode response: %w", err)

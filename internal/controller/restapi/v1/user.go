@@ -24,22 +24,16 @@ func (c *V1) GetUser(ctx *fiber.Ctx) error {
 	idParam := ctx.Params("id")
 	userID, err := strconv.ParseInt(idParam, 10, 64)
 	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "invalid user id",
-		})
+		return errorResponse(ctx, fiber.StatusBadRequest, "invalid user id")
 	}
 
 	u, err := c.user.GetByID(ctx.Context(), userID)
 	if err != nil {
 		if errors.Is(err, user.ErrUserNotFound) {
-			return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
-				"error": "user not found",
-			})
+			return errorResponse(ctx, fiber.StatusNotFound, "user not found")
 		}
 		c.l.Error(err, "http - v1 - GetUser")
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "internal server error",
-		})
+		return errorResponse(ctx, fiber.StatusInternalServerError, "internal server error")
 	}
 
 	return ctx.JSON(u)

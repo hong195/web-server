@@ -102,7 +102,7 @@ func (r *SkinportRepo) fetchItems(ctx context.Context, tradable bool) ([]skinpor
 		return nil, fmt.Errorf("create request: %w", err)
 	}
 
-	req.Header.Set("Accept-Encoding", "gzip, deflate")
+	req.Header.Set("Accept-Encoding", "br")
 
 	resp, err := r.client.Do(req)
 	if err != nil {

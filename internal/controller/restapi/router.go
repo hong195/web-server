@@ -18,25 +18,33 @@ import (
 // @description Skinport items and user balance API
 // @version     1.0
 // @host        localhost:8080
-// @BasePath    /v1
+// @BasePath    /api/v1
 func NewRouter(app *fiber.App, cfg *config.Config, l logger.Interface, user usecase.User, items usecase.Items) {
 	app.Use(middleware.Logger(l))
 	app.Use(middleware.Recovery(l))
 
 	if cfg.Metrics.Enabled {
 		prometheus := fiberprometheus.New("skinport-api")
-		prometheus.RegisterAt(app, "/metrics")
+		prometheus.RegisterAt(app, "/api/metrics")
 		app.Use(prometheus.Middleware)
 	}
 
 	if cfg.Swagger.Enabled {
-		app.Get("/swagger/*", swagger.HandlerDefault)
+		app.Get("/api/swagger/*", swagger.HandlerDefault)
 	}
 
-	app.Get("/healthz", func(ctx *fiber.Ctx) error { return ctx.SendStatus(http.StatusOK) })
+	apiGroup := app.Group("/api")
+	apiGroup.Get("/healthz", func(ctx *fiber.Ctx) error { return ctx.SendStatus(http.StatusOK) })
 
-	apiV1Group := app.Group("/v1")
+	apiV1Group := apiGroup.Group("/v1")
 	{
 		v1.NewRoutes(apiV1Group, l, user, items)
+	}
+
+	// Legacy compatibility routes (without /api prefix) to avoid 404s for existing clients.
+	app.Get("/healthz", func(ctx *fiber.Ctx) error { return ctx.Redirect("/api/healthz", http.StatusPermanentRedirect) })
+	legacyV1Group := app.Group("/v1")
+	{
+		v1.NewRoutes(legacyV1Group, l, user, items)
 	}
 }

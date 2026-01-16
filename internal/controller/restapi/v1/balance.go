@@ -2,6 +2,7 @@ package v1
 
 import (
 	"errors"
+	"github.com/hong195/web-server/internal/controller/restapi/v1/response"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/hong195/web-server/internal/controller/restapi/v1/request"
@@ -25,46 +26,40 @@ import (
 func (c *V1) DeductBalance(ctx *fiber.Ctx) error {
 	var req request.DeductBalance
 	if err := ctx.BodyParser(&req); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "invalid request body",
+		return ctx.Status(fiber.StatusBadRequest).JSON(response.Error{
+			Error: "invalid request body",
 		})
 	}
 
 	if err := c.v.Struct(req); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": err.Error(),
+		return ctx.Status(fiber.StatusBadRequest).JSON(response.Error{
+			Error: err.Error(),
 		})
 	}
 
 	err := c.user.DeductBalance(ctx.Context(), req.UserID, req.Amount)
 	if err != nil {
 		if errors.Is(err, user.ErrInvalidAmount) {
-			return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error": "invalid amount",
+			return ctx.Status(fiber.StatusBadRequest).JSON(response.Error{
+				Error: "invalid amount",
 			})
 		}
 		if errors.Is(err, user.ErrUserNotFound) {
-			return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
-				"error": "user not found",
-			})
+			return ctx.Status(fiber.StatusNotFound).JSON(response.Error{Error: "user not found"})
 		}
 		if errors.Is(err, persistent.ErrInsufficientFunds) {
-			return ctx.Status(fiber.StatusPaymentRequired).JSON(fiber.Map{
-				"error": "insufficient funds",
+			return ctx.Status(fiber.StatusPaymentRequired).JSON(response.Error{
+				Error: "insufficient funds",
 			})
 		}
 		c.l.Error(err, "http - v1 - DeductBalance")
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "internal server error",
-		})
+		return ctx.Status(fiber.StatusInternalServerError).JSON(response.Error{Error: "internal server error"})
 	}
 
 	u, err := c.user.GetByID(ctx.Context(), req.UserID)
 	if err != nil {
 		c.l.Error(err, "http - v1 - DeductBalance - GetByID")
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "internal server error",
-		})
+		return ctx.Status(fiber.StatusInternalServerError).JSON(response.Error{Error: "internal server error"})
 	}
 
 	return ctx.JSON(fiber.Map{

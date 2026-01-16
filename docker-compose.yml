@@ -30,7 +30,7 @@ x-backend-app-environment: &x-backend-app-environment
   SKINPORT_BASE_URL: "https://api.skinport.com/v1"
   SKINPORT_APP_ID: "730"
   SKINPORT_CURRENCY: "USD"
-  SKINPORT_CACHE_TTL_SEC: "300"
+  SKINPORT_CACHE_TTL_SEC: "400"
 
 
 services:

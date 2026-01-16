@@ -17,6 +17,12 @@ definitions:
     - amount
     - user_id
     type: object
+  response.Balance:
+    properties:
+      new_balance:
+        example: 150.5
+        type: number
+    type: object
   response.Error:
     properties:
       error:
@@ -31,6 +37,25 @@ definitions:
         type: number
       tradable_min_price:
         type: number
+    type: object
+  response.ItemsPagedResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/response.ItemResponse'
+        type: array
+      limit:
+        example: 100
+        type: integer
+      page:
+        example: 1
+        type: integer
+      total:
+        example: 5000
+        type: integer
+      total_pages:
+        example: 50
+        type: integer
     type: object
 host: localhost:8080
 info:
@@ -56,10 +81,9 @@ paths:
         "200":
           description: Success response with new balance
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/response.Balance'
         "400":
-          description: Bad Request
+          description: Invalid request body or amount
           schema:
             $ref: '#/definitions/response.Error'
         "402":
@@ -67,11 +91,11 @@ paths:
           schema:
             $ref: '#/definitions/response.Error'
         "404":
-          description: Not Found
+          description: User not found
           schema:
             $ref: '#/definitions/response.Error'
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
             $ref: '#/definitions/response.Error'
       summary: Deduct user balance
@@ -80,15 +104,25 @@ paths:
   /items:
     get:
       description: Returns Skinport items with tradable and non-tradable minimum prices
+        (paginated)
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 100
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/response.ItemResponse'
-            type: array
+            $ref: '#/definitions/response.ItemsPagedResponse'
         "500":
           description: internal server error
           schema:

@@ -17,11 +17,11 @@ import (
 // @Accept      json
 // @Produce     json
 // @Param       request body request.DeductBalance true "Deduct balance request"
-// @Success     200 {object} map[string]interface{} "Success response with new balance"
-// @Failure     400 {object} response.Error
+// @Success     200 {object} response.Balance "Success response with new balance"
+// @Failure     400 {object} response.Error "Invalid request body or amount"
 // @Failure     402 {object} response.Error "Insufficient funds"
-// @Failure     404 {object} response.Error
-// @Failure     500 {object} response.Error
+// @Failure     404 {object} response.Error "User not found"
+// @Failure     500 {object} response.Error "Internal server error"
 // @Router      /balance/deduct [post]
 func (c *V1) DeductBalance(ctx *fiber.Ctx) error {
 	var req request.DeductBalance
@@ -62,8 +62,5 @@ func (c *V1) DeductBalance(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(response.Error{Error: "internal server error"})
 	}
 
-	return ctx.JSON(fiber.Map{
-		"success":     true,
-		"new_balance": u.Balance,
-	})
+	return ctx.JSON(response.Balance{NewBalance: u.Balance})
 }

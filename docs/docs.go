@@ -43,12 +43,11 @@ const docTemplate = `{
                     "200": {
                         "description": "Success response with new balance",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/response.Balance"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid request body or amount",
                         "schema": {
                             "$ref": "#/definitions/response.Error"
                         }
@@ -60,13 +59,13 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "User not found",
                         "schema": {
                             "$ref": "#/definitions/response.Error"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/response.Error"
                         }
@@ -76,7 +75,7 @@ const docTemplate = `{
         },
         "/items": {
             "get": {
-                "description": "Returns Skinport items with tradable and non-tradable minimum prices",
+                "description": "Returns Skinport items with tradable and non-tradable minimum prices (paginated)",
                 "produces": [
                     "application/json"
                 ],
@@ -84,14 +83,27 @@ const docTemplate = `{
                     "items"
                 ],
                 "summary": "List Skinport items",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 100,
+                        "description": "Items per page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/response.ItemResponse"
-                            }
+                            "$ref": "#/definitions/response.ItemsPagedResponse"
                         }
                     },
                     "500": {
@@ -187,6 +199,15 @@ const docTemplate = `{
                 }
             }
         },
+        "response.Balance": {
+            "type": "object",
+            "properties": {
+                "new_balance": {
+                    "type": "number",
+                    "example": 150.5
+                }
+            }
+        },
         "response.Error": {
             "type": "object",
             "properties": {
@@ -207,6 +228,33 @@ const docTemplate = `{
                 },
                 "tradable_min_price": {
                     "type": "number"
+                }
+            }
+        },
+        "response.ItemsPagedResponse": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.ItemResponse"
+                    }
+                },
+                "limit": {
+                    "type": "integer",
+                    "example": 100
+                },
+                "page": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 5000
+                },
+                "total_pages": {
+                    "type": "integer",
+                    "example": 50
                 }
             }
         }

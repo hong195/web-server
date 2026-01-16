@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/andybalholm/brotli"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -114,8 +116,14 @@ func (r *SkinportRepo) fetchItems(ctx context.Context, tradable bool) ([]skinpor
 		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
+	var reader io.Reader = resp.Body
+
+	reader = brotli.NewReader(resp.Body)
+
+	fmt.Println(resp.Body)
+
 	var items []skinportItem
-	if err := json.NewDecoder(resp.Body).Decode(&items); err != nil {
+	if err := json.NewDecoder(reader).Decode(&items); err != nil {
 		return nil, fmt.Errorf("decode response: %w", err)
 	}
 

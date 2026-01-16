@@ -28,7 +28,7 @@ func Run(cfg *config.Config) {
 	userUseCase := user.New(userRepo)
 
 	httpServer := httpserver.New(l, httpserver.Port(cfg.HTTP.Port), httpserver.Prefork(cfg.HTTP.UsePreforkMode))
-	restapi.NewRouter(httpServer.App, cfg, l, userUseCase)
+	restapi.NewRouter(httpServer.App, cfg, l, userUseCase, nil)
 
 	httpServer.Start()
 

@@ -14,12 +14,12 @@ import (
 	"github.com/hong195/web-server/pkg/logger"
 )
 
-// @title       Skinport API
+// NewRouter @title       Skinport API
 // @description Skinport items and user balance API
 // @version     1.0
 // @host        localhost:8080
 // @BasePath    /v1
-func NewRouter(app *fiber.App, cfg *config.Config, l logger.Interface, user usecase.User) {
+func NewRouter(app *fiber.App, cfg *config.Config, l logger.Interface, user usecase.User, items usecase.Items) {
 	app.Use(middleware.Logger(l))
 	app.Use(middleware.Recovery(l))
 
@@ -37,6 +37,6 @@ func NewRouter(app *fiber.App, cfg *config.Config, l logger.Interface, user usec
 
 	apiV1Group := app.Group("/v1")
 	{
-		v1.NewRoutes(apiV1Group, l, user)
+		v1.NewRoutes(apiV1Group, l, user, items)
 	}
 }

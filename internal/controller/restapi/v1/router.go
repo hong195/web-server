@@ -7,13 +7,19 @@ import (
 	"github.com/hong195/web-server/pkg/logger"
 )
 
-func NewRoutes(apiV1Group fiber.Router, l logger.Interface, user usecase.User) {
+func NewRoutes(apiV1Group fiber.Router, l logger.Interface, user usecase.User, items usecase.Items) {
 	c := &V1{
-		l:    l,
-		v:    validator.New(validator.WithRequiredStructEnabled()),
-		user: user,
+		l:     l,
+		v:     validator.New(validator.WithRequiredStructEnabled()),
+		user:  user,
+		items: items,
 	}
 
+	//user routes
 	apiV1Group.Get("/users/:id", c.GetUser)
 	apiV1Group.Post("/balance/deduct", c.DeductBalance)
+
+	//items routes
+	itemsGroup := apiV1Group.Group("/items")
+	itemsGroup.Get("/", c.getItems)
 }

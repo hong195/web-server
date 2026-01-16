@@ -7,7 +7,8 @@ import (
 )
 
 type V1 struct {
-	l    logger.Interface
-	v    *validator.Validate
-	user usecase.User
+	l     logger.Interface
+	v     *validator.Validate
+	user  usecase.User
+	items usecase.Items
 }

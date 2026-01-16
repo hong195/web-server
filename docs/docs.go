@@ -74,6 +74,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/items": {
+            "get": {
+                "description": "Returns Skinport items with tradable and non-tradable minimum prices",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "items"
+                ],
+                "summary": "List Skinport items",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/response.ItemResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/response.Error"
+                        }
+                    },
+                    "502": {
+                        "description": "failed to fetch items from skinport",
+                        "schema": {
+                            "$ref": "#/definitions/response.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{id}": {
             "get": {
                 "description": "Returns user with their balance",
@@ -160,6 +195,20 @@ const docTemplate = `{
                     "example": "message"
                 }
             }
+        },
+        "response.ItemResponse": {
+            "type": "object",
+            "properties": {
+                "market_hash_name": {
+                    "type": "string"
+                },
+                "non_tradable_min_price": {
+                    "type": "number"
+                },
+                "tradable_min_price": {
+                    "type": "number"
+                }
+            }
         }
     }
 }`
@@ -170,7 +219,7 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:8080",
 	BasePath:         "/v1",
 	Schemes:          []string{},
-	Title:            "Skinport API",
+	Title:            "",
 	Description:      "Skinport items and user balance API",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

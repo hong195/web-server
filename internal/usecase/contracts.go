@@ -13,4 +13,8 @@ type (
 		GetByID(ctx context.Context, userID int64) (*entity.User, error)
 		DeductBalance(ctx context.Context, userID int64, amount float64) error
 	}
+
+	Items interface {
+		GetItems(ctx context.Context) ([]entity.Item, error)
+	}
 )

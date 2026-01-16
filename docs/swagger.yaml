@@ -23,11 +23,19 @@ definitions:
         example: message
         type: string
     type: object
+  response.ItemResponse:
+    properties:
+      market_hash_name:
+        type: string
+      non_tradable_min_price:
+        type: number
+      tradable_min_price:
+        type: number
+    type: object
 host: localhost:8080
 info:
   contact: {}
   description: Skinport items and user balance API
-  title: Skinport API
   version: "1.0"
 paths:
   /balance/deduct:
@@ -69,6 +77,29 @@ paths:
       summary: Deduct user balance
       tags:
       - balance
+  /items:
+    get:
+      description: Returns Skinport items with tradable and non-tradable minimum prices
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/response.ItemResponse'
+            type: array
+        "500":
+          description: internal server error
+          schema:
+            $ref: '#/definitions/response.Error'
+        "502":
+          description: failed to fetch items from skinport
+          schema:
+            $ref: '#/definitions/response.Error'
+      summary: List Skinport items
+      tags:
+      - items
   /users/{id}:
     get:
       consumes:

@@ -3,10 +3,10 @@ package v1
 import (
 	"errors"
 
-	"github.com/evrone/go-clean-template/internal/controller/restapi/v1/request"
-	"github.com/evrone/go-clean-template/internal/repo/persistent"
-	"github.com/evrone/go-clean-template/internal/usecase/user"
 	"github.com/gofiber/fiber/v2"
+	"github.com/hong195/web-server/internal/controller/restapi/v1/request"
+	"github.com/hong195/web-server/internal/repo/persistent"
+	"github.com/hong195/web-server/internal/usecase/user"
 )
 
 // DeductBalance godoc

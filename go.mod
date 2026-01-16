@@ -1,4 +1,4 @@
-module github.com/evrone/go-clean-template
+module github.com/hong195/web-server
 
 go 1.25
 

@@ -4,14 +4,14 @@ import (
 	"net/http"
 
 	"github.com/ansrivas/fiberprometheus/v2"
-	"github.com/evrone/go-clean-template/config"
-	_ "github.com/evrone/go-clean-template/docs"
-	"github.com/evrone/go-clean-template/internal/controller/restapi/middleware"
-	v1 "github.com/evrone/go-clean-template/internal/controller/restapi/v1"
-	"github.com/evrone/go-clean-template/internal/usecase"
-	"github.com/evrone/go-clean-template/pkg/logger"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/swagger"
+	"github.com/hong195/web-server/config"
+	_ "github.com/hong195/web-server/docs"
+	"github.com/hong195/web-server/internal/controller/restapi/middleware"
+	v1 "github.com/hong195/web-server/internal/controller/restapi/v1"
+	"github.com/hong195/web-server/internal/usecase"
+	"github.com/hong195/web-server/pkg/logger"
 )
 
 // @title       Skinport API

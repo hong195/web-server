@@ -1,10 +1,10 @@
 package v1
 
 import (
-	"github.com/evrone/go-clean-template/internal/usecase"
-	"github.com/evrone/go-clean-template/pkg/logger"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/hong195/web-server/internal/usecase"
+	"github.com/hong195/web-server/pkg/logger"
 )
 
 func NewRoutes(apiV1Group fiber.Router, l logger.Interface, user usecase.User) {

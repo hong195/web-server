@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/evrone/go-clean-template/internal/entity"
-	"github.com/evrone/go-clean-template/pkg/postgres"
+	"github.com/hong195/web-server/internal/entity"
+	"github.com/hong195/web-server/pkg/postgres"
 	"github.com/jackc/pgx/v5"
 )
 

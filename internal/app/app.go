@@ -6,13 +6,13 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/evrone/go-clean-template/config"
-	"github.com/evrone/go-clean-template/internal/controller/restapi"
-	"github.com/evrone/go-clean-template/internal/repo/persistent"
-	"github.com/evrone/go-clean-template/internal/usecase/user"
-	"github.com/evrone/go-clean-template/pkg/httpserver"
-	"github.com/evrone/go-clean-template/pkg/logger"
-	"github.com/evrone/go-clean-template/pkg/postgres"
+	"github.com/hong195/web-server/config"
+	"github.com/hong195/web-server/internal/controller/restapi"
+	"github.com/hong195/web-server/internal/repo/persistent"
+	"github.com/hong195/web-server/internal/usecase/user"
+	"github.com/hong195/web-server/pkg/httpserver"
+	"github.com/hong195/web-server/pkg/logger"
+	"github.com/hong195/web-server/pkg/postgres"
 )
 
 func Run(cfg *config.Config) {

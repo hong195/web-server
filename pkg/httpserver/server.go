@@ -6,9 +6,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/evrone/go-clean-template/pkg/logger"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
+	"github.com/hong195/web-server/pkg/logger"
 	"golang.org/x/sync/errgroup"
 )
 

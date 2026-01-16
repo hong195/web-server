@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/evrone/go-clean-template/internal/repo/persistent"
-	"github.com/evrone/go-clean-template/internal/usecase/user"
+	"github.com/hong195/web-server/internal/repo/persistent"
+	"github.com/hong195/web-server/internal/usecase/user"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 )

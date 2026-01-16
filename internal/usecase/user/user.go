@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/evrone/go-clean-template/internal/entity"
-	"github.com/evrone/go-clean-template/internal/repo"
+	"github.com/hong195/web-server/internal/entity"
+	"github.com/hong195/web-server/internal/repo"
 )
 
 var (

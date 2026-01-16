@@ -4,8 +4,8 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/evrone/go-clean-template/internal/usecase/user"
 	"github.com/gofiber/fiber/v2"
+	"github.com/hong195/web-server/internal/usecase/user"
 )
 
 // GetUser godoc

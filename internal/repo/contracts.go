@@ -15,4 +15,9 @@ type (
 		GetByID(ctx context.Context, userID int64) (*entity.User, error)
 		DeductBalance(ctx context.Context, userID int64, amount float64) error
 	}
+
+	// ItemsRepo - источник данных для items (внешний API).
+	ItemsRepo interface {
+		GetItems(ctx context.Context) ([]entity.Item, error)
+	}
 )

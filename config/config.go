@@ -9,12 +9,13 @@ import (
 type (
 	// Config -.
 	Config struct {
-		App     App
-		HTTP    HTTP
-		Log     Log
-		PG      PG
-		Metrics Metrics
-		Swagger Swagger
+		App      App
+		HTTP     HTTP
+		Log      Log
+		PG       PG
+		Metrics  Metrics
+		Swagger  Swagger
+		Skinport Skinport
 	}
 
 	// App -.
@@ -48,6 +49,14 @@ type (
 	// Swagger -.
 	Swagger struct {
 		Enabled bool `env:"SWAGGER_ENABLED" envDefault:"false"`
+	}
+
+	// Skinport -.
+	Skinport struct {
+		BaseURL     string `env:"SKINPORT_BASE_URL" envDefault:"https://api.skinport.com/v1"`
+		AppID       int    `env:"SKINPORT_APP_ID" envDefault:"730"`
+		Currency    string `env:"SKINPORT_CURRENCY" envDefault:"USD"`
+		CacheTTLSec int    `env:"SKINPORT_CACHE_TTL_SEC" envDefault:"300"`
 	}
 )
 
